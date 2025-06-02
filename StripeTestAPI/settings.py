@@ -26,10 +26,6 @@ SECRET_KEY = 'django-insecure-htyf7!#h@zuxl%8w3c)*-!$@7du@n8!rb8e+4k$nn_wze=kus_
 DEBUG = True
 
 ALLOWED_HOSTS = []
-INTERNAL_IPS = [
-    'localhost',
-    '127.0.0.1'
-]
 
 
 # Application definition
@@ -42,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'StripeApp',
-    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'StripeTestAPI.urls'
