@@ -1,0 +1,12 @@
+{% load filters %}
+
+{% set_variable 0 as counts %}
+
+{% for item_data in items_data %}
+    {% for _ in item_data.counts|create_range %}
+        <div class="item" id="item-{{ counts }}">
+            {% increase_variable counts as counts  %}
+            {% include 'include/item.html' with item=item_data.item %}
+        </div>
+    {% endfor %}
+{% endfor %}

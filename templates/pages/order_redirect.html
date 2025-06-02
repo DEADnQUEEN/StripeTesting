@@ -1,0 +1,9 @@
+<script>
+    let url = "{% url 'show_order' %}";
+
+    if (localStorage.order_id !== undefined){
+        url += localStorage.order_id + '/'
+    }
+
+    window.location.replace(url)
+</script>

@@ -1,0 +1,64 @@
+{% extends 'base/index.html' %}
+
+{% block loads %}
+    <title>Купить "{{ item.name }}"</title>
+{% endblock %}
+
+{% block content %}
+{% include 'include/item.html' with item=item %}
+<div>
+    <button id="buy-button">Купить</button>
+    <script>
+        document.querySelector('button#buy-button').addEventListener(
+            'click',
+            () => {
+                let stripe = Stripe('{{ item.currency.public_api_code }}')
+                fetch("{% url 'buy_item' item.id %}", {
+                    method: 'GET'
+                }).then((response) => {
+                    return response.json()
+                }).then(
+                    (session) => {
+                        return stripe.redirectToCheckout(
+                            {sessionId: session.sessionId}
+                        )
+                    }
+                )
+            }
+        )
+    </script>
+    <button id="add-to-card">Добавить в заказ</button>
+    {% csrf_token %}
+    <script>
+        document.querySelector('button#add-to-card').addEventListener(
+            'click',
+            () => {
+                let xhr = new XMLHttpRequest();
+
+                let data = {
+                    order_id: null,
+                    item_id: {{ item.id }}
+                };
+
+                if (localStorage.order_id !== undefined){
+                    data.order_id = JSON.parse(localStorage.order_id)
+                }
+
+                xhr.open('POST', '{% url "add_to_order" %}')
+                xhr.setRequestHeader('X-CSRFToken', document.querySelector('[name=csrfmiddlewaretoken]').value)
+
+                xhr.onload = () => {
+                    if (xhr.status !== 200) {
+                        return
+                    }
+
+                    let response = JSON.parse(xhr.response)
+                    localStorage.order_id = response.order_id
+                }
+
+                xhr.send(JSON.stringify(data))
+            }
+        )
+    </script>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base/index.html' %}
+{% load filters %}
+
+{% block loads %}
+    <title>Оформить заказ</title>
+{% endblock %}
+
+{% block content %}
+    <div class="items">
+        {% for order_item in order.rel_order.select_related.all %}
+            {% for foo in order_item.quantity|create_range %}
+                <div class="item">
+                {% include 'include/item.html' with item=order_item.item %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div id="price">
+        <p>Стоимость заказа: {{ order.price }}</p>
+    </div>
+    <button id="buy-order">
+        Купить
+    </button>
+    <script>
+        document.querySelector('button#buy-order').addEventListener(
+            'click',
+            () => {
+                let stripe = Stripe('{{ order.rel_order.first.item.currency.public_api_code }}')
+                // Call your backend to create the Checkout Session
+                fetch("{% url 'buy_order' order.id %}", {
+                    method: 'GET'
+                }).then((response) => {
+                    return response.json()
+                }).then(
+                    (session) => {
+                        return stripe.redirectToCheckout(
+                            {sessionId: session.sessionId}
+                        )
+                    }
+                )
+            }
+        )
+    </script>
+{% endblock %}
